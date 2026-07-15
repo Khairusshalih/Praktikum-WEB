@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('pegawai', function (Blueprint $table) {
@@ -16,7 +13,7 @@ return new class extends Migration
             $table->string('nip', 20)->unique();
             $table->string('nama', 100);
             $table->string('email', 100)->unique();
-            $table->string('no_telepon', 15)->nullable();
+            $table->string('no_telepon', 25)->nullable(); // Diperbaiki: 25 karakter
             $table->text('alamat')->nullable();
             $table->date('tanggal_masuk');
             $table->string('departemen', 50);
@@ -30,9 +27,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('pegawai');

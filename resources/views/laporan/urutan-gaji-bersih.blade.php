@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Rekap Gaji per Departemen')
+@section('title', 'Urutan Gaji Bersih Tertinggi')
 
 @section('content')
 <div class="card shadow-sm">
-    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-        <h5 class="mb-0"><i class="fas fa-building"></i> Rekap Gaji per Departemen</h5>
+    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-trophy"></i> Top 10 Gaji Bersih Tertinggi</h5>
         <a href="{{ route('laporan.index') }}" class="btn btn-light btn-sm">
             <i class="fas fa-arrow-left"></i> Kembali
         </a>
@@ -44,42 +44,48 @@
             <table class="table table-bordered table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th width="5%">No</th>
+                        <th width="5%">Peringkat</th>
+                        <th>Pegawai</th>
                         <th>Departemen</th>
-                        <th>Jumlah Pegawai</th>
-                        <th>Total Gaji</th>
-                        <th>Rata-rata Gaji</th>
-                        <th>Gaji Tertinggi</th>
-                        <th>Gaji Terendah</th>
+                        <th>Golongan</th>
+                        <th>Periode</th>
+                        <th>Gaji Bersih</th>
+                        <th>Potongan</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($data as $key => $item)
+                    @forelse($data as $item)
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td><strong>{{ $item->departemen }}</strong></td>
-                        <td class="text-center">{{ $item->jumlah_pegawai }} orang</td>
-                        <td class="text-success fw-bold">Rp {{ number_format($item->total_gaji, 0, ',', '.') }}</td>
-                        <td>Rp {{ number_format($item->rata_rata_gaji, 0, ',', '.') }}</td>
-                        <td>Rp {{ number_format($item->gaji_tertinggi, 0, ',', '.') }}</td>
-                        <td>Rp {{ number_format($item->gaji_terendah, 0, ',', '.') }}</td>
+                        <td class="text-center">
+                            @if($item->peringkat == 1)
+                            <span class="badge bg-warning fs-6">#1</span>
+                            @elseif($item->peringkat == 2)
+                            <span class="badge bg-secondary fs-6">#2</span>
+                            @elseif($item->peringkat == 3)
+                            <span class="badge bg-danger fs-6">#3</span>
+                            @else
+                            <span class="badge bg-info">#{{ $item->peringkat }}</span>
+                            @endif
+                        </td>
+                        <td>
+                            <strong>{{ $item->pegawai->nama }}</strong><br>
+                            <small class="text-muted">{{ $item->pegawai->nip }}</small>
+                        </td>
+                        <td>{{ $item->pegawai->departemen }}</td>
+                        <td><span class="badge bg-info">{{ $item->pegawai->golongan->kode }}</span></td>
+                        <td>{{ $bulanList[$item->bulan] }} {{ $item->tahun }}</td>
+                        <td class="fw-bold text-success fs-5">Rp {{ number_format($item->gaji_bersih, 0, ',', '.') }}</td>
+                        <td class="text-danger">Rp {{ number_format($item->total_potongan, 0, ',', '.') }}</td>
                     </tr>
                     @empty
                     <tr>
                         <td colspan="7" class="text-center py-4">
                             <i class="fas fa-database fa-2x text-muted mb-2 d-block"></i>
-                            Belum ada data
+                            Belum ada data penggajian
                         </td>
                     </tr>
                     @endforelse
                 </tbody>
-                <tfoot class="table-secondary">
-                    <tr>
-                        <th colspan="3" class="text-end">TOTAL KESELURUHAN:</th>
-                        <th class="text-success">Rp {{ number_format($data->sum('total_gaji'), 0, ',', '.') }}</th>
-                        <th colspan="3"></th>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </div>

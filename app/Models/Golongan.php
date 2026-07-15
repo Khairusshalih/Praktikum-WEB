@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory; // Tambahkan ini
 
 class Golongan extends Model
 {
+    use HasFactory; // Tambahkan ini
+
     protected $table = 'golongan';
 
     protected $fillable = [
@@ -18,10 +21,6 @@ class Golongan extends Model
         'keterangan'
     ];
 
-    /**
-     * Relasi One-to-Many ke Pegawai
-     * Satu Golongan memiliki banyak Pegawai
-     */
     public function pegawai(): HasMany
     {
         return $this->hasMany(Pegawai::class, 'golongan_id');

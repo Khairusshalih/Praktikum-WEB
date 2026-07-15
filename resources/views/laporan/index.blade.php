@@ -1,41 +1,153 @@
 @extends('layouts.app')
 
-@section('title', 'Laporan Penggajian')
+@section('title', 'Menu Laporan')
 
 @section('content')
-<div class="card shadow-sm">
-    <div class="card-header bg-primary text-white">
-        <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Daftar Laporan Penggajian</h5>
-    </div>
-    <div class="card-body">
-        <div class="row g-3">
-            @php
-                $laporan = [
-                    ['route' => 'laporan.slip-gaji', 'icon' => 'fa-file-invoice-dollar', 'title' => 'Slip Gaji', 'desc' => 'Slip gaji seluruh pegawai per periode'],
-                    ['route' => 'laporan.rekap-departemen', 'icon' => 'fa-building', 'title' => 'Rekap per Departemen', 'desc' => 'Total & rata-rata gaji per departemen'],
-                    ['route' => 'laporan.gaji-diatas-rata', 'icon' => 'fa-arrow-trend-up', 'title' => 'Gaji di Atas Rata-rata', 'desc' => 'Pegawai dengan gaji melebihi rata-rata'],
-                    ['route' => 'laporan.potongan-terbesar', 'icon' => 'fa-arrow-trend-down', 'title' => 'Potongan Terbesar', 'desc' => 'Top 10 pegawai dengan potongan terbesar'],
-                    ['route' => 'laporan.total-per-bulan', 'icon' => 'fa-calendar', 'title' => 'Total Gaji per Bulan', 'desc' => 'Tren total gaji sepanjang tahun'],
-                    ['route' => 'laporan.masa-kerja', 'icon' => 'fa-briefcase', 'title' => 'Masa Kerja > 5 Tahun', 'desc' => 'Daftar pegawai senior'],
-                    ['route' => 'laporan.urutan-gaji', 'icon' => 'fa-sort-amount-down', 'title' => 'Urutan Gaji Bersih', 'desc' => 'Ranking gaji bersih tertinggi'],
-                    ['route' => 'laporan.pegawai-per-golongan', 'icon' => 'fa-layer-group', 'title' => 'Pegawai per Golongan', 'desc' => 'Distribusi pegawai tiap golongan'],
-                    ['route' => 'laporan.rekap-tunjangan', 'icon' => 'fa-hand-holding-dollar', 'title' => 'Rekap Tunjangan', 'desc' => 'Total tunjangan makan, transport, lainnya'],
-                    ['route' => 'laporan.perbandingan-gaji-potongan', 'icon' => 'fa-scale-balanced', 'title' => 'Gaji Pokok vs Potongan', 'desc' => 'Perbandingan per departemen'],
-                ];
-            @endphp
-            @foreach($laporan as $item)
-            <div class="col-md-4">
-                <a href="{{ route($item['route']) }}" class="text-decoration-none">
-                    <div class="card h-100 border-0 shadow-sm">
-                        <div class="card-body">
-                            <i class="fas {{ $item['icon'] }} fa-2x text-primary mb-2"></i>
-                            <h6 class="card-title">{{ $item['title'] }}</h6>
-                            <p class="card-text text-muted small">{{ $item['desc'] }}</p>
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-line"></i> Laporan Penggajian</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Laporan 1-5 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-receipt fa-3x text-info mb-3"></i>
+                                <h5>Slip Gaji Pegawai</h5>
+                                <p class="text-muted">Detail gaji per pegawai per periode</p>
+                                <a href="{{ route('laporan.slip-gaji') }}" class="btn btn-info">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
                         </div>
                     </div>
-                </a>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-building fa-3x text-success mb-3"></i>
+                                <h5>Rekap Gaji per Departemen</h5>
+                                <p class="text-muted">Total gaji per departemen</p>
+                                <a href="{{ route('laporan.rekap-departemen') }}" class="btn btn-success">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-arrow-up fa-3x text-warning mb-3"></i>
+                                <h5>Gaji di Atas Rata-rata</h5>
+                                <p class="text-muted">Pegawai dengan gaji > rata-rata</p>
+                                <a href="{{ route('laporan.gaji-diatas-rata') }}" class="btn btn-warning">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-minus-circle fa-3x text-danger mb-3"></i>
+                                <h5>Potongan Terbesar</h5>
+                                <p class="text-muted">Potongan terbesar per pegawai</p>
+                                <a href="{{ route('laporan.potongan-terbesar') }}" class="btn btn-danger">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-bar fa-3x text-primary mb-3"></i>
+                                <h5>Total Gaji per Bulan</h5>
+                                <p class="text-muted">Grafik total gaji per bulan</p>
+                                <a href="{{ route('laporan.total-gaji-per-bulan') }}" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Laporan 6 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-calendar-alt fa-3x text-info mb-3"></i>
+                                <h5>Masa Kerja > 5 Tahun</h5>
+                                <p class="text-muted">Pegawai dengan pengalaman > 5 tahun</p>
+                                <a href="{{ route('laporan.masa-kerja-5-tahun') }}" class="btn btn-info">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Laporan 7 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
+                                <h5>Urutan Gaji Tertinggi</h5>
+                                <p class="text-muted">Top 10 pegawai dengan gaji tertinggi</p>
+                                <a href="{{ route('laporan.urutan-gaji-bersih') }}" class="btn btn-warning">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Laporan 8 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-pie fa-3x text-success mb-3"></i>
+                                <h5>Jumlah Pegawai per Golongan</h5>
+                                <p class="text-muted">Distribusi pegawai berdasarkan golongan</p>
+                                <a href="{{ route('laporan.jumlah-pegawai-per-golongan') }}" class="btn btn-success">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Laporan 9 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-utensils fa-3x text-primary mb-3"></i>
+                                <h5>Rekap Tunjangan</h5>
+                                <p class="text-muted">Total tunjangan makan & transport per bulan</p>
+                                <a href="{{ route('laporan.rekap-tunjangan') }}" class="btn btn-primary">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Laporan 10 -->
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 bg-light">
+                            <div class="card-body text-center">
+                                <i class="fas fa-chart-line fa-3x text-danger mb-3"></i>
+                                <h5>Perbandingan Gaji & Potongan</h5>
+                                <p class="text-muted">Perbandingan per golongan</p>
+                                <a href="{{ route('laporan.perbandingan-gaji-potongan') }}" class="btn btn-danger">
+                                    <i class="fas fa-eye"></i> Lihat Laporan
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            @endforeach
         </div>
     </div>
 </div>

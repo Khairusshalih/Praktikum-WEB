@@ -2,19 +2,26 @@
 
 use App\Http\Controllers\GolonganController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\KomponenGajiController;
+use App\Http\Controllers\LaporanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PenggajianController;
-use App\Http\Controllers\LaporanController;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
+
+// Route root - redirect ke dashboard jika sudah login, atau ke login
 Route::get('/', function () {
-    return Auth::check()
-        ? redirect()->route('dashboard')
+    return Auth::check() 
+        ? redirect()->route('dashboard') 
         : redirect()->route('login');
 });
 
+// Routes untuk Guest (belum login)
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
         return view('auth.login');
@@ -39,6 +46,7 @@ Route::middleware('guest')->group(function () {
     });
 });
 
+// Routes Logout
 Route::post('/logout', function (Request $request) {
     Auth::logout();
     $request->session()->invalidate();
@@ -47,14 +55,22 @@ Route::post('/logout', function (Request $request) {
     return redirect()->route('login')->with('success', 'Anda berhasil logout.');
 })->middleware('auth')->name('logout');
 
+// Routes yang memerlukan autentikasi
 Route::middleware('auth')->group(function () {
+    // Dashboard
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $totalPegawai = \App\Models\Pegawai::count();
+        $totalGolongan = \App\Models\Golongan::count();
+        $aktif = \App\Models\Pegawai::where('status', 'aktif')->count();
+        return view('dashboard', compact('totalPegawai', 'totalGolongan', 'aktif'));
     })->name('dashboard');
 
+    // Resource CRUD
     Route::resource('pegawai', PegawaiController::class);
     Route::resource('golongan', GolonganController::class);
+    Route::resource('komponen-gaji', KomponenGajiController::class);
 
+    // Transaksi Penggajian
     Route::get('/transaksi/penggajian', function () {
         $currentYear = now()->year;
         $monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -81,20 +97,20 @@ Route::middleware('auth')->group(function () {
 
         return view('transaksi.laporan', compact('reports'));
     })->name('transaksi.laporan');
-});
 
-Route::resource('penggajian', PenggajianController::class);
-
-Route::prefix('laporan')->name('laporan.')->group(function () {
-    Route::get('/', [LaporanController::class, 'index'])->name('index');
-    Route::get('/slip-gaji', [LaporanController::class, 'slipGaji'])->name('slip-gaji');
-    Route::get('/rekap-departemen', [LaporanController::class, 'rekapDepartemen'])->name('rekap-departemen');
-    Route::get('/gaji-diatas-rata', [LaporanController::class, 'gajiDiatasRata'])->name('gaji-diatas-rata');
-    Route::get('/potongan-terbesar', [LaporanController::class, 'potonganTerbesar'])->name('potongan-terbesar');
-    Route::get('/total-per-bulan', [LaporanController::class, 'totalPerBulan'])->name('total-per-bulan');
-    Route::get('/masa-kerja', [LaporanController::class, 'masaKerja'])->name('masa-kerja');
-    Route::get('/urutan-gaji', [LaporanController::class, 'urutanGaji'])->name('urutan-gaji');
-    Route::get('/pegawai-per-golongan', [LaporanController::class, 'pegawaiPerGolongan'])->name('pegawai-per-golongan');
-    Route::get('/rekap-tunjangan', [LaporanController::class, 'rekapTunjangan'])->name('rekap-tunjangan');
-    Route::get('/perbandingan-gaji-potongan', [LaporanController::class, 'perbandinganGajiPotongan'])->name('perbandingan-gaji-potongan');
+    // Routes Laporan
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/', [LaporanController::class, 'index'])->name('index');
+        Route::get('/slip-gaji', [LaporanController::class, 'slipGaji'])->name('slip-gaji');
+        Route::get('/rekap-departemen', [LaporanController::class, 'rekapDepartemen'])->name('rekap-departemen');
+        Route::get('/gaji-diatas-rata', [LaporanController::class, 'gajiDiatasRata'])->name('gaji-diatas-rata');
+        Route::get('/potongan-terbesar', [LaporanController::class, 'potonganTerbesar'])->name('potongan-terbesar');
+        Route::get('/total-gaji-per-bulan', [LaporanController::class, 'totalGajiPerBulan'])->name('total-gaji-per-bulan');
+        Route::get('/masa-kerja-5-tahun', [LaporanController::class, 'masaKerjaLimaTahun'])->name('masa-kerja-5-tahun');
+        Route::get('/urutan-gaji-bersih', [LaporanController::class, 'urutanGajiBersih'])->name('urutan-gaji-bersih');
+        Route::get('/jumlah-pegawai-per-golongan', [LaporanController::class, 'jumlahPegawaiPerGolongan'])->name('jumlah-pegawai-per-golongan');
+        Route::get('/rekap-tunjangan', [LaporanController::class, 'rekapTunjangan'])->name('rekap-tunjangan');
+        Route::get('/perbandingan-gaji-potongan', [LaporanController::class, 'perbandinganGajiPotongan'])->name('perbandingan-gaji-potongan');
+        Route::get('/export-pdf/{jenis}', [LaporanController::class, 'exportPdf'])->name('export-pdf');
+    });
 });

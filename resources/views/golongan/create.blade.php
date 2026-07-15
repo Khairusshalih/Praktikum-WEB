@@ -1,132 +1,148 @@
 @extends('layouts.app')
-@section('title', isset($golongan) ? 'Edit Golongan' : 'Tambah Golongan Baru')
+
+@section('title', 'Tambah Golongan')
 
 @section('content')
-<div class="max-w-5xl mx-auto">
-    <div class="flex items-center gap-4 mb-6">
-        <a href="{{ route('golongan.index') }}" class="w-9 h-9 rounded-full bg-white hover:bg-slate-50 flex items-center justify-center text-slate-500 transition-colors border border-slate-200 shadow-sm">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <div>
-            <h2 class="text-xl font-bold text-slate-800 tracking-tight">{{ isset($golongan) ? 'Edit Data Golongan' : 'Tambah Golongan Baru' }}</h2>
-            <p class="text-sm text-slate-500 mt-1">Silakan lengkapi formulir di bawah ini dengan data yang valid.</p>
-        </div>
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Tambah Golongan</h5>
     </div>
-
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-        <form action="{{ isset($golongan) ? route('golongan.update', $golongan->id) : route('golongan.store') }}" method="POST" class="p-8">
+    <div class="card-body">
+        <form action="{{ route('golongan.store') }}" method="POST">
             @csrf
-            @if(isset($golongan))
-                @method('PUT')
-            @endif
 
-            <div class="mb-8 pb-6 border-b border-slate-100">
-                <h3 class="text-base font-semibold text-slate-800 mb-5 flex items-center gap-2">
-                    <div class="w-7 h-7 rounded bg-indigo-50 text-indigo-600 flex items-center justify-center">
-                        <i class="fas fa-layer-group text-sm"></i>
-                    </div>
-                    Data Golongan
-                </h3>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="kode" class="block text-sm font-medium text-slate-700 mb-1.5">Kode Golongan <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                <i class="fas fa-hashtag text-slate-400"></i>
-                            </div>
-                            <input type="text" id="kode" name="kode" value="{{ old('kode', $golongan->kode ?? '') }}"
-                                class="block w-full pl-12 pr-4 py-2 bg-white border {{ $errors->has('kode') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-primary-500 focus:border-primary-500' }} rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-shadow sm:text-sm"
-                                placeholder="Contoh: III-A">
-                        </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="kode" class="form-label">Kode Golongan <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('kode') is-invalid @enderror"
+                            id="kode" name="kode" value="{{ old('kode') }}" placeholder="I, II, III, IV">
                         @error('kode')
-                            <p class="mt-1 text-sm text-red-500"><i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}</p>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
-                    <div>
-                        <label for="nama_golongan" class="block text-sm font-medium text-slate-700 mb-1.5">Nama Golongan <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                <i class="fas fa-layer-group text-slate-400"></i>
-                            </div>
-                            <input type="text" id="nama_golongan" name="nama_golongan" value="{{ old('nama_golongan', $golongan->nama_golongan ?? '') }}"
-                                class="block w-full pl-12 pr-4 py-2 bg-white border {{ $errors->has('nama_golongan') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-primary-500 focus:border-primary-500' }} rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-shadow sm:text-sm"
-                                placeholder="Contoh: Penata Muda">
-                        </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="nama_golongan" class="form-label">Nama Golongan <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('nama_golongan') is-invalid @enderror"
+                            id="nama_golongan" name="nama_golongan" value="{{ old('nama_golongan') }}" 
+                            placeholder="Golongan I (Junior Staff)">
                         @error('nama_golongan')
-                            <p class="mt-1 text-sm text-red-500"><i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}</p>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
             </div>
 
-            <div class="mb-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label for="gaji_pokok" class="block text-sm font-medium text-slate-700 mb-1.5">Gaji Pokok <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                <span class="text-slate-400 font-medium">Rp</span>
-                            </div>
-                            <input type="number" id="gaji_pokok" name="gaji_pokok" value="{{ old('gaji_pokok', $golongan->gaji_pokok ?? '') }}"
-                                class="block w-full pl-12 pr-4 py-2 bg-white border {{ $errors->has('gaji_pokok') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-primary-500 focus:border-primary-500' }} rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-shadow sm:text-sm"
-                                placeholder="0">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="gaji_pokok" class="form-label">Gaji Pokok <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" class="form-control @error('gaji_pokok') is-invalid @enderror"
+                                id="gaji_pokok" name="gaji_pokok" value="{{ old('gaji_pokok') }}" 
+                                placeholder="3500000" min="0">
                         </div>
                         @error('gaji_pokok')
-                            <p class="mt-1 text-sm text-red-500"><i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}</p>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
-                    <div>
-                        <label for="tunjangan_makan" class="block text-sm font-medium text-slate-700 mb-1.5">Tunjangan Makan</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                <span class="text-slate-400 font-medium">Rp</span>
-                            </div>
-                            <input type="number" id="tunjangan_makan" name="tunjangan_makan" value="{{ old('tunjangan_makan', $golongan->tunjangan_makan ?? '') }}"
-                                class="block w-full pl-12 pr-4 py-2 bg-white border {{ $errors->has('tunjangan_makan') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-primary-500 focus:border-primary-500' }} rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-shadow sm:text-sm"
-                                placeholder="0">
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="tunjangan_makan" class="form-label">Tunjangan Makan</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" class="form-control @error('tunjangan_makan') is-invalid @enderror"
+                                id="tunjangan_makan" name="tunjangan_makan" value="{{ old('tunjangan_makan', 0) }}" 
+                                placeholder="500000" min="0">
                         </div>
                         @error('tunjangan_makan')
-                            <p class="mt-1 text-sm text-red-500"><i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}</p>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
-
-                    <div>
-                        <label for="tunjangan_transport" class="block text-sm font-medium text-slate-700 mb-1.5">Tunjangan Transport</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                                <span class="text-slate-400 font-medium">Rp</span>
-                            </div>
-                            <input type="number" id="tunjangan_transport" name="tunjangan_transport" value="{{ old('tunjangan_transport', $golongan->tunjangan_transport ?? '') }}"
-                                class="block w-full pl-12 pr-4 py-2 bg-white border {{ $errors->has('tunjangan_transport') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-primary-500 focus:border-primary-500' }} rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-shadow sm:text-sm"
-                                placeholder="0">
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <label for="tunjangan_transport" class="form-label">Tunjangan Transport</label>
+                        <div class="input-group">
+                            <span class="input-group-text">Rp</span>
+                            <input type="number" class="form-control @error('tunjangan_transport') is-invalid @enderror"
+                                id="tunjangan_transport" name="tunjangan_transport" value="{{ old('tunjangan_transport', 0) }}" 
+                                placeholder="300000" min="0">
                         </div>
                         @error('tunjangan_transport')
-                            <p class="mt-1 text-sm text-red-500"><i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}</p>
+                        <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
             </div>
 
-            <div class="mb-8">
-                <label for="keterangan" class="block text-sm font-medium text-slate-700 mb-1.5">Keterangan (Opsional)</label>
-                <textarea id="keterangan" name="keterangan" rows="3"
-                    class="block w-full px-4 py-3 bg-white border {{ $errors->has('keterangan') ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : 'border-slate-300 focus:ring-primary-500 focus:border-primary-500' }} rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 transition-shadow sm:text-sm"
-                    placeholder="Catatan tambahan mengenai golongan ini...">{{ old('keterangan', $golongan->keterangan ?? '') }}</textarea>
+            <div class="mb-3">
+                <label for="keterangan" class="form-label">Keterangan</label>
+                <textarea class="form-control @error('keterangan') is-invalid @enderror"
+                    id="keterangan" name="keterangan" rows="3" 
+                    placeholder="Deskripsi golongan...">{{ old('keterangan') }}</textarea>
+                @error('keterangan')
+                <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
             </div>
 
-            <div class="flex items-center justify-end gap-3 pt-6 mt-8 border-t border-slate-100">
-                <a href="{{ route('golongan.index') }}" class="px-5 py-2 rounded-lg font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-sm">
-                    Batal
+            <!-- Ringkasan -->
+            <div class="alert alert-info">
+                <h6><i class="fas fa-calculator"></i> Ringkasan Komponen Gaji</h6>
+                <hr>
+                <div class="row">
+                    <div class="col-md-4">
+                        <small>Gaji Pokok</small><br>
+                        <strong id="summary_gaji_pokok">Rp 0</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small>Total Tunjangan</small><br>
+                        <strong id="summary_tunjangan" class="text-success">Rp 0</strong>
+                    </div>
+                    <div class="col-md-4">
+                        <small>Total Gaji</small><br>
+                        <strong id="summary_total" class="text-primary">Rp 0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ route('golongan.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Kembali
                 </a>
-                <button type="submit" class="px-5 py-2 rounded-lg font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors shadow-sm flex items-center gap-2 text-sm">
-                    <i class="fas fa-save"></i>
-                    <span>Simpan Data</span>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Simpan
                 </button>
             </div>
         </form>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function hitungRingkasan() {
+        let gajiPokok = parseInt(document.getElementById('gaji_pokok').value) || 0;
+        let tunjanganMakan = parseInt(document.getElementById('tunjangan_makan').value) || 0;
+        let tunjanganTransport = parseInt(document.getElementById('tunjangan_transport').value) || 0;
+
+        let totalTunjangan = tunjanganMakan + tunjanganTransport;
+        let totalGaji = gajiPokok + totalTunjangan;
+
+        document.getElementById('summary_gaji_pokok').innerHTML = 'Rp ' + new Intl.NumberFormat('id-ID').format(gajiPokok);
+        document.getElementById('summary_tunjangan').innerHTML = 'Rp ' + new Intl.NumberFormat('id-ID').format(totalTunjangan);
+        document.getElementById('summary_total').innerHTML = 'Rp ' + new Intl.NumberFormat('id-ID').format(totalGaji);
+    }
+
+    document.getElementById('gaji_pokok').addEventListener('input', hitungRingkasan);
+    document.getElementById('tunjangan_makan').addEventListener('input', hitungRingkasan);
+    document.getElementById('tunjangan_transport').addEventListener('input', hitungRingkasan);
+
+    // Initial calculation
+    hitungRingkasan();
+</script>
+@endpush

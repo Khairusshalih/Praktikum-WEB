@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory; // Tambahkan ini
 
 class Pegawai extends Model
 {
-    use HasFactory;
+    use HasFactory; // Tambahkan ini
+
     protected $table = 'pegawai';
 
     protected $fillable = [
@@ -25,29 +26,33 @@ class Pegawai extends Model
         'status'
     ];
 
-    /**
-     * Relasi Many-to-One ke Golongan
-     * Seorang Pegawai memiliki satu Golongan
-     */
+    protected $casts = [
+        'tanggal_masuk' => 'date',
+    ];
+
     public function golongan(): BelongsTo
     {
         return $this->belongsTo(Golongan::class, 'golongan_id');
     }
 
-    /**
-     * Relasi One-to-Many ke KomponenGaji
-     * Seorang Pegawai memiliki banyak riwayat gaji
-     */
     public function komponenGaji(): HasMany
     {
         return $this->hasMany(KomponenGaji::class, 'pegawai_id');
     }
 
-    /**
-     * Alias relasi riwayat gaji untuk tampilan pegawai.
-     */
-    public function riwayatGaji(): HasMany
+    public function sudahDigaji(int $bulan, int $tahun): bool
     {
-        return $this->komponenGaji();
+        return $this->komponenGaji()
+            ->where('bulan', $bulan)
+            ->where('tahun', $tahun)
+            ->exists();
+    }
+
+    public function getGajiTerakhirAttribute()
+    {
+        return $this->komponenGaji()
+            ->orderBy('tahun', 'desc')
+            ->orderBy('bulan', 'desc')
+            ->first();
     }
 }

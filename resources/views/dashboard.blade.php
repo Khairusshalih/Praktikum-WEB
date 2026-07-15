@@ -1,79 +1,93 @@
 @extends('layouts.app')
-@section('title', 'Dashboard Overview')
+
+@section('title', 'Dashboard')
 
 @section('content')
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <!-- Total Pegawai Card -->
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-        <div class="flex items-start justify-between">
-            <div>
-                <p class="text-slate-500 text-sm font-medium mb-1">Total Pegawai</p>
-                <h3 class="text-3xl font-bold text-slate-800 tracking-tight">{{ \App\Models\Pegawai::count() }}</h3>
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-primary shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total Pegawai</h6>
+                        <h2 class="display-4">{{ $totalPegawai ?? 0 }}</h2>
+                    </div>
+                    <i class="fas fa-users fa-3x opacity-50"></i>
+                </div>
             </div>
-            <div class="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-                <i class="fas fa-users text-xl"></i>
-            </div>
-        </div>
-        <div class="mt-4 flex items-center text-sm">
-            <span class="text-green-600 font-medium flex items-center"><i class="fas fa-arrow-up mr-1 text-xs"></i> 12%</span>
-            <span class="text-slate-500 ml-2">dari bulan lalu</span>
         </div>
     </div>
-
-    <!-- Total Golongan Card -->
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-        <div class="flex items-start justify-between">
-            <div>
-                <p class="text-slate-500 text-sm font-medium mb-1">Total Golongan</p>
-                <h3 class="text-3xl font-bold text-slate-800 tracking-tight">{{ \App\Models\Golongan::count() }}</h3>
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-success shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Total Golongan</h6>
+                        <h2 class="display-4">{{ $totalGolongan ?? 0 }}</h2>
+                    </div>
+                    <i class="fas fa-layer-group fa-3x opacity-50"></i>
+                </div>
             </div>
-            <div class="w-12 h-12 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-                <i class="fas fa-layer-group text-xl"></i>
-            </div>
-        </div>
-        <div class="mt-4 flex items-center text-sm">
-            <span class="text-slate-500">Struktur aktif saat ini</span>
         </div>
     </div>
-
-    <!-- Pegawai Aktif Card -->
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-        <div class="flex items-start justify-between">
-            <div>
-                <p class="text-slate-500 text-sm font-medium mb-1">Pegawai Aktif</p>
-                <h3 class="text-3xl font-bold text-slate-800 tracking-tight">{{ \App\Models\Pegawai::where('status', 'aktif')->count() }}</h3>
+    <div class="col-md-4 mb-3">
+        <div class="card text-white bg-info shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title">Pegawai Aktif</h6>
+                        <h2 class="display-4">{{ $aktif ?? 0 }}</h2>
+                    </div>
+                    <i class="fas fa-user-check fa-3x opacity-50"></i>
+                </div>
             </div>
-            <div class="w-12 h-12 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-                <i class="fas fa-user-check text-xl"></i>
-            </div>
-        </div>
-        <div class="mt-4 flex items-center text-sm text-slate-500">
-            <div class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></div>
-            <span>Berstatus Aktif Bekerja</span>
         </div>
     </div>
 </div>
 
-<!-- Extra Dashboard Area -->
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-        <h4 class="text-base font-semibold text-slate-800 mb-4">Aktivitas Terbaru</h4>
-        <div class="flex flex-col items-center justify-center py-12 text-slate-400">
-            <i class="fas fa-chart-line text-4xl mb-3 text-slate-200"></i>
-            <p class="text-sm">Belum ada data grafik untuk ditampilkan.</p>
+<div class="row mt-3">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-body">
+                <h5><i class="fas fa-rocket text-primary"></i> Quick Access</h5>
+                <hr>
+                <div class="d-grid gap-2">
+                    <a href="{{ route('pegawai.index') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-users"></i> Kelola Pegawai
+                    </a>
+                    <a href="{{ route('golongan.index') }}" class="btn btn-outline-success">
+                        <i class="fas fa-layer-group"></i> Kelola Golongan
+                    </a>
+                    <a href="{{ route('komponen-gaji.index') }}" class="btn btn-outline-info">
+                        <i class="fas fa-calculator"></i> Kelola Penggajian
+                    </a>
+                    <a href="{{ route('laporan.index') }}" class="btn btn-outline-warning">
+                        <i class="fas fa-chart-line"></i> Lihat Laporan
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
-        <h4 class="text-base font-semibold text-slate-800 mb-4">Pengumuman</h4>
-        <div class="space-y-4">
-            <div class="p-4 rounded-lg bg-blue-50 border border-blue-100 flex gap-4">
-                <div class="mt-0.5 text-blue-600">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <div>
-                    <h5 class="text-slate-800 font-medium text-sm">Pembaruan Sistem</h5>
-                    <p class="text-sm text-slate-600 mt-1">Antarmuka telah diperbarui dengan skema warna yang lebih profesional dan bersih.</p>
-                </div>
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <i class="fas fa-info-circle"></i> Informasi Sistem
+            </div>
+            <div class="card-body">
+                <p>Aplikasi Penggajian ini digunakan untuk mengelola:</p>
+                <ul>
+                    <li><i class="fas fa-check-circle text-success"></i> Data Pegawai</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Data Golongan dan Komponen Gaji</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Proses Penggajian Bulanan</li>
+                    <li><i class="fas fa-check-circle text-success"></i> Laporan-Laporan Penggajian</li>
+                </ul>
+                <hr>
+                <small class="text-muted">
+                    <i class="fas fa-database"></i> Total Data: 
+                    {{ \App\Models\Pegawai::count() }} Pegawai, 
+                    {{ \App\Models\Golongan::count() }} Golongan,
+                    {{ \App\Models\KomponenGaji::count() }} Transaksi Gaji
+                </small>
             </div>
         </div>
     </div>

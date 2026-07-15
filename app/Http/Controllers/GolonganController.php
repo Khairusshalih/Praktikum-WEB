@@ -13,7 +13,7 @@ class GolonganController extends Controller
      */
     public function index()
     {
-        $golongan = Golongan::paginate(10);
+        $golongan = Golongan::withCount('pegawai')->paginate(10);
         return view('golongan.index', compact('golongan'));
     }
 

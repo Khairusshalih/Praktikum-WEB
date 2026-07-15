@@ -1,53 +1,170 @@
-@extends('layouts.app')
-
-@section('title', 'Login')
-
-@section('content')
-<div class="h-full flex items-center justify-center py-6 px-4">
-    <div class="w-full max-w-sm rounded-3xl border border-slate-200 bg-white shadow-xl p-8">
-        <div class="mb-8 text-center">
-            <span class="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-primary-500 text-white text-xl shadow-lg shadow-primary-500/20">
-                <i class="fas fa-lock"></i>
-            </span>
-            <h1 class="mt-6 text-3xl font-semibold text-slate-900">Masuk ke Sistem</h1>
-            <p class="mt-3 text-sm text-slate-500">Masukkan email dan password Anda untuk melanjutkan.</p>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Login - Aplikasi Penggajian</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 420px;
+            width: 100%;
+        }
+        .login-card .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-card .logo i {
+            font-size: 3rem;
+            color: #667eea;
+            background: #f0f0ff;
+            padding: 20px;
+            border-radius: 50%;
+        }
+        .login-card .logo h3 {
+            margin-top: 15px;
+            font-weight: 700;
+            color: #333;
+        }
+        .login-card .logo p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            width: 100%;
+            color: white;
+            transition: all 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .form-check-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .footer-text {
+            text-align: center;
+            margin-top: 20px;
+            color: #999;
+            font-size: 0.85rem;
+        }
+        .alert {
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo">
+            <i class="fas fa-money-bill-wave"></i>
+            <h3>Aplikasi Penggajian</h3>
+            <p>Masuk ke sistem penggajian</p>
         </div>
 
-        <form action="{{ route('login') }}" method="POST" class="mt-8 space-y-6">
+        @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        @if($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}">
             @csrf
-
-            <div class="space-y-4">
-                <label class="block">
-                    <span class="text-sm font-medium text-slate-700">Email</span>
-                    <input type="email" name="email" value="{{ old('email') }}" required autofocus class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100" placeholder="email@example.com" />
-                </label>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
+                           id="email" name="email" value="{{ old('email') }}" 
+                           placeholder="email@example.com" required autofocus>
+                </div>
                 @error('email')
-                    <p class="text-xs text-red-600">{{ $message }}</p>
+                <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
+            </div>
 
-                <label class="block">
-                    <span class="text-sm font-medium text-slate-700">Password</span>
-                    <input type="password" name="password" required class="mt-2 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100" placeholder="Masukkan password" />
-                </label>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                           id="password" name="password" placeholder="Masukkan password" required>
+                </div>
                 @error('password')
-                    <p class="text-xs text-red-600">{{ $message }}</p>
+                <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
             </div>
 
-            <div class="flex items-center justify-between text-sm text-slate-500">
-                <label class="inline-flex items-center gap-2">
-                    <input type="checkbox" name="remember" class="rounded border-slate-300 text-primary-600 shadow-sm focus:ring-primary-500" />
-                    Ingat saya
-                </label>
-                <span class="text-xs text-slate-400">Hubungi admin untuk akses baru</span>
+            <div class="mb-3 d-flex justify-content-between align-items-center">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                    <label class="form-check-label" for="remember">
+                        Ingat saya
+                    </label>
+                </div>
+                <small class="text-muted">
+                    <a href="#" class="text-decoration-none">Lupa password?</a>
+                </small>
             </div>
 
-            <button type="submit" class="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">Masuk</button>
+            <button type="submit" class="btn btn-login">
+                <i class="fas fa-sign-in-alt"></i> Masuk
+            </button>
         </form>
 
-        <p class="mt-6 text-center text-xs text-slate-500">
-            Dengan masuk, Anda setuju dengan kebijakan penggunaan sistem.
-        </p>
+        <div class="footer-text mt-3">
+            <p>Belum punya akun? <a href="#" class="text-decoration-none">Hubungi Admin</a></p>
+            <p class="mb-0">&copy; {{ date('Y') }} Aplikasi Penggajian</p>
+        </div>
     </div>
-</div>
-@endsection
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
