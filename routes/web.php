@@ -1,104 +1,39 @@
 <?php
 
-use App\Http\Controllers\GolonganController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\GolonganController;
 use App\Http\Controllers\KomponenGajiController;
 use App\Http\Controllers\LaporanController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
+// Route login langsung menampilkan view
+Route::get('/login', function () {
+    return view('auth.login');
+})->name('login')->middleware('guest');
 
-// Route root - redirect ke dashboard jika sudah login, atau ke login
+// Route default redirect ke login
 Route::get('/', function () {
-    return Auth::check() 
-        ? redirect()->route('dashboard') 
-        : redirect()->route('login');
+    return redirect()->route('login');
 });
 
-// Routes untuk Guest (belum login)
-Route::middleware('guest')->group(function () {
-    Route::get('/login', function () {
-        return view('auth.login');
-    })->name('login');
+// Dashboard berdasarkan role
+Route::get('/dashboard/admin', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('dashboard.admin');
 
-    Route::post('/login', function (Request $request) {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+Route::get('/dashboard/karyawan', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'role:karyawan'])
+    ->name('dashboard.karyawan');
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended(route('dashboard'))
-                ->with('success', 'Login berhasil. Selamat datang kembali!');
-        }
-
-        return back()
-            ->withErrors(['email' => 'Email atau password salah.'])
-            ->onlyInput('email')
-            ->with('error', 'Login gagal. Silakan periksa kembali email dan password Anda.');
-    });
-});
-
-// Routes Logout
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-
-    return redirect()->route('login')->with('success', 'Anda berhasil logout.');
-})->middleware('auth')->name('logout');
-
-// Routes yang memerlukan autentikasi
-Route::middleware('auth')->group(function () {
-    // Dashboard
-    Route::get('/dashboard', function () {
-        $totalPegawai = \App\Models\Pegawai::count();
-        $totalGolongan = \App\Models\Golongan::count();
-        $aktif = \App\Models\Pegawai::where('status', 'aktif')->count();
-        return view('dashboard', compact('totalPegawai', 'totalGolongan', 'aktif'));
-    })->name('dashboard');
-
-    // Resource CRUD
+// Route yang hanya bisa diakses admin
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('pegawai', PegawaiController::class);
     Route::resource('golongan', GolonganController::class);
     Route::resource('komponen-gaji', KomponenGajiController::class);
 
-    // Transaksi Penggajian
-    Route::get('/transaksi/penggajian', function () {
-        $currentYear = now()->year;
-        $monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-        $monthName = $monthNames[now()->month - 1];
-
-        $monthlyTransactions = \App\Models\KomponenGaji::where('tahun', $currentYear)->count();
-        $totalPaid = \App\Models\KomponenGaji::where('tahun', $currentYear)->sum('gaji_bersih');
-        $paidEmployees = \App\Models\KomponenGaji::where('tahun', $currentYear)->distinct('pegawai_id')->count('pegawai_id');
-
-        $transactions = \App\Models\KomponenGaji::with('pegawai.golongan')
-            ->orderByDesc('tanggal_gaji')
-            ->paginate(10);
-
-        return view('transaksi.penggajian', compact('currentYear', 'monthName', 'monthlyTransactions', 'totalPaid', 'paidEmployees', 'transactions'));
-    })->name('transaksi.penggajian');
-
-    Route::get('/transaksi/laporan', function () {
-        $reports = \App\Models\KomponenGaji::selectRaw('tahun, bulan, SUM(gaji_bersih) as total, COUNT(*) as transaksi')
-            ->groupBy('tahun', 'bulan')
-            ->orderByDesc('tahun')
-            ->orderByDesc('bulan')
-            ->limit(12)
-            ->get();
-
-        return view('transaksi.laporan', compact('reports'));
-    })->name('transaksi.laporan');
-
-    // Routes Laporan
     Route::prefix('laporan')->name('laporan.')->group(function () {
         Route::get('/', [LaporanController::class, 'index'])->name('index');
         Route::get('/slip-gaji', [LaporanController::class, 'slipGaji'])->name('slip-gaji');
@@ -114,3 +49,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/export-pdf/{jenis}', [LaporanController::class, 'exportPdf'])->name('export-pdf');
     });
 });
+
+// Route yang bisa diakses semua user (termasuk karyawan)
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Karyawan bisa melihat slip gaji sendiri
+    Route::get('/slip-gaji-saya', [LaporanController::class, 'slipGajiSaya'])->name('slip-gaji-saya');
+});
+
+// Auth routes (jika menggunakan Breeze)
+require __DIR__.'/auth.php';

@@ -120,7 +120,7 @@
         @endauth
 
         <div class="footer-text mt-4">
-            <p>&copy; {{ date('Y') }} Aplikasi Penggajian - Praktikum Pemrograman Web</p>
+            <p>&copy; {{ date('Y') }} Aplikasi Penggajian - Praktikum Pemrograman Web - By KHAIRUSSHALIH</p>
         </div>
     </div>
 

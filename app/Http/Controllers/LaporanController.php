@@ -287,7 +287,6 @@ class LaporanController extends Controller
         $tahunList = range(2023, date('Y'));
         $bulanList = $this->getBulanList();
 
-        // Data untuk chart
         $chartBulan = [];
         $chartMakan = [];
         $chartTransport = [];
@@ -332,7 +331,6 @@ class LaporanController extends Controller
             ];
         }
 
-        // Data untuk chart
         $chartLabels = [];
         $chartGajiPokok = [];
         $chartPotongan = [];
@@ -343,7 +341,6 @@ class LaporanController extends Controller
             $chartPotongan[] = $item->rata_potongan;
         }
 
-        // Hitung rata-rata keseluruhan
         $totalRataGaji = KomponenGaji::avg('gaji_pokok');
         $totalRataPotongan = KomponenGaji::avg('total_potongan');
         $persentasePotongan = $totalRataGaji > 0 ? ($totalRataPotongan / $totalRataGaji) * 100 : 0;
@@ -357,6 +354,39 @@ class LaporanController extends Controller
             'totalRataPotongan',
             'persentasePotongan'
         ));
+    }
+
+    /**
+     * Slip Gaji untuk karyawan yang login
+     */
+    public function slipGajiSaya(Request $request)
+    {
+        $user = auth()->user();
+        $pegawai = Pegawai::where('email', $user->email)->first();
+
+        if (!$pegawai) {
+            return redirect()->back()->with('error', 'Data pegawai tidak ditemukan untuk akun Anda.');
+        }
+
+        $query = KomponenGaji::with('pegawai.golongan')
+            ->where('pegawai_id', $pegawai->id);
+
+        if ($request->filled('bulan')) {
+            $query->where('bulan', $request->bulan);
+        }
+
+        if ($request->filled('tahun')) {
+            $query->where('tahun', $request->tahun);
+        }
+
+        $slipGaji = $query->orderBy('tahun', 'desc')
+            ->orderBy('bulan', 'desc')
+            ->paginate(10);
+
+        $bulanList = $this->getBulanList();
+        $tahunList = range(2023, date('Y'));
+
+        return view('laporan.slip-gaji-saya', compact('slipGaji', 'pegawai', 'bulanList', 'tahunList'));
     }
 
     /**

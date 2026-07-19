@@ -2,24 +2,36 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('users')->insert([
-            'name' => 'Administrator',
-            'email' => 'admin@penggajian.com',
-            'password' => Hash::make('password123'),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Buat admin default
+        User::updateOrCreate(
+            ['email' => 'admin@perusahaan.com'],
+            [
+                'name' => 'Administrator',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]
+        );
 
-        $this->command->info('User admin berhasil dibuat!');
-        $this->command->info('Email: admin@penggajian.com');
-        $this->command->info('Password: password123');
+        // Buat karyawan sample
+        User::updateOrCreate(
+            ['email' => 'karyawan@perusahaan.com'],
+            [
+                'name' => 'Karyawan Sample',
+                'password' => Hash::make('password'),
+                'role' => 'karyawan',
+            ]
+        );
+
+        $this->command->info('User admin dan karyawan berhasil dibuat!');
+        $this->command->info('Admin: admin@perusahaan.com / password');
+        $this->command->info('Karyawan: karyawan@perusahaan.com / password');
     }
 }
